@@ -4,7 +4,7 @@ import 'swiper/css/swiper.css';
 import { SliderContainer } from './style';
 
 interface SliderProps {
-  bannerList: { imgUrl: string }[];
+  bannerList: { imageUrl: string }[];
 }
 
 export function Slider(props: SliderProps) {
@@ -31,10 +31,10 @@ export function Slider(props: SliderProps) {
         <div className="swiper-wrapper">
           {bannerList.map((slider, index) => {
             return (
-              <div className="swiper-slide" key={slider.imgUrl + index}>
+              <div className="swiper-slide" key={slider.imageUrl}>
                 <div className="slider-nav">
                   <img
-                    src={slider.imgUrl}
+                    src={slider.imageUrl}
                     width="100%"
                     height="100%"
                     alt="推荐"
