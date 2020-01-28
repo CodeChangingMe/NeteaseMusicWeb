@@ -15,12 +15,11 @@ function RecommendList(props: { recommendList: any[] }) {
                 <div className="decorate"></div>
                 <LazyLoad
                   placeholder={
-                    <img
-                      width="100%"
-                      height="100%"
-                      src={require('./music.png')}
-                      alt="music"
-                    />
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%'
+                      }}></div>
                   }>
                   <img src={item.picUrl + '?param=300x300'} alt="music" />
                 </LazyLoad>
