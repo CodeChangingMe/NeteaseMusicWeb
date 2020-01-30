@@ -5,9 +5,10 @@ import { Map } from 'immutable';
 import * as actionTypes from './store/actionCreators';
 import { ThunkDispatch } from 'redux-thunk';
 import { connect } from 'react-redux';
+import Loading from '../../baseUI/loading/index';
 
 function Recommend(props: any) {
-  const { bannerList, recommendList } = props;
+  const { bannerList, recommendList, enterLoading } = props;
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
 
   useEffect(() => {
@@ -21,7 +22,11 @@ function Recommend(props: any) {
   return (
     <div>
       <Slider bannerList={bannerListJS}></Slider>
-      <RecommendList recommendList={recommendListJS}></RecommendList>
+      {enterLoading ? (
+        <Loading></Loading>
+      ) : (
+        <RecommendList recommendList={recommendListJS}></RecommendList>
+      )}
     </div>
   );
 }
@@ -29,7 +34,8 @@ function Recommend(props: any) {
 // 映射Redux全局的state到组件的Props上
 const mapStateToProps = (state: Map<string, any>) => ({
   bannerList: state.getIn(['recommend', 'bannerList']),
-  recommendList: state.getIn(['recommend', 'recommendList'])
+  recommendList: state.getIn(['recommend', 'recommendList']),
+  enterLoading: state.getIn(['recommend', 'enterLoading'])
 });
 
 // 映射dispatch到Props上
