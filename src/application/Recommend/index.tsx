@@ -27,8 +27,6 @@ function Recommend(props: any) {
   const bannerListJS = bannerList ? bannerList.toJS() : [];
   const recommendListJS = recommendList ? recommendList.toJS() : [];
 
-  console.log({ forceCheck });
-
   // 由于react-lazyload检测父元素的position必须是staic或者absolute，因此需要显示调用forceCheck，来触发懒加载的检测
   return (
     <Content>

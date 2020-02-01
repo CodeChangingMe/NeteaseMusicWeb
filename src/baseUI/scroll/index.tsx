@@ -105,7 +105,6 @@ const Scroll: React.FunctionComponent<ScrollProps> = forwardRef(
       if (refresh && bScroll) {
         bScroll.refresh();
       }
-      console.log('hello');
     });
 
     useImperativeHandle(ref, () => ({

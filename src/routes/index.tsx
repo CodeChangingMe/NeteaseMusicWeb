@@ -2,6 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import Home from '../application/Home';
 import Recommend from '../application/Recommend';
+import Singers from '../application/Singers';
 
 export default [
   {
@@ -16,6 +17,10 @@ export default [
       {
         path: '/recommend',
         component: Recommend
+      },
+      {
+        path: '/singers',
+        component: Singers
       }
     ]
   }
