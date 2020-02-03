@@ -1,5 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Horizen from '../../baseUI/horizen-item';
+import { NavContainer, ListContainer, List, ListItem } from './style';
+import Scroll from '../../baseUI/scroll';
+import { Map } from 'immutable';
+import {
+  getHotSingerList,
+  changePageCount,
+  changeEnterLoading,
+  getSingerList,
+  changePullUpLoading,
+  refreshMoreHotSingerList,
+  refreshMoreSingerList,
+  changePullDownLoading
+} from './store/actionCreators';
+import { connect } from 'react-redux';
+import LazyLoad, { forceCheck } from 'react-lazyload';
+import Loading from '../../baseUI/loading';
 
 // 歌手种类
 export const categoryTypes = [
@@ -173,32 +189,166 @@ export const alphaTypes = [
   }
 ];
 
-function Singers() {
+//mock 歌手列表数据
+const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(item => {
+  return {
+    picUrl:
+      'https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg',
+    name: '隔壁老樊',
+    accountId: 277313426
+  };
+});
+
+function Singers(props: any) {
   let [category, setCategory] = useState('');
   let [alpha, setAlpha] = useState('');
 
-  let handleUpdateCatetory = (val: string) => {
+  const {
+    singerList,
+    pageCount,
+    pullUpLoading,
+    pullDownLoading,
+    enterLoading
+  } = props;
+
+  const {
+    getHotSingerDispatch,
+    updateDispatch,
+    pullDownRefreshDispatch,
+    pullUpRefreshDispatch
+  } = props;
+
+  useEffect(() => {
+    getHotSingerDispatch();
+    // eslint-disable-next-line
+  }, []);
+
+  const handleUpdateCatetory = (val: string) => {
     setCategory(val);
+    updateDispatch(val, alpha);
   };
 
-  let handleUpdateAlpha = (val: string) => {
+  const handleUpdateAlpha = (val: string) => {
     setAlpha(val);
+    updateDispatch(category, val);
+  };
+
+  const handlePullUp = () => {
+    pullUpRefreshDispatch(category, alpha, category === '', pageCount);
+  };
+
+  const handlePullDown = () => {
+    pullDownRefreshDispatch(category, alpha);
+  };
+
+  const renderSingerList = () => {
+    const list = singerList ? singerList.toJS() : [];
+    console.log(props);
+    return (
+      <List>
+        {list.map((item: any, index: number) => {
+          return (
+            <ListItem key={item.accountId + '' + index}>
+              <div className="img_wrapper">
+                <LazyLoad
+                  placeholder={
+                    <div
+                      style={{
+                        width: '50px',
+                        height: '50px'
+                      }}></div>
+                  }>
+                  <img
+                    src={`${item.picUrl}?param=300x300`}
+                    width="100%"
+                    height="100%"
+                    alt="music"
+                  />
+                </LazyLoad>
+              </div>
+              <span className="name">{item.name}</span>
+            </ListItem>
+          );
+        })}
+      </List>
+    );
   };
 
   return (
     <div>
-      <Horizen
-        list={categoryTypes}
-        title={'分类 (默认热门):'}
-        oldVal={category}
-        handleClick={(val: string) => handleUpdateCatetory(val)}></Horizen>
-      <Horizen
-        list={alphaTypes}
-        title={'首字母:'}
-        oldVal={alpha}
-        handleClick={(val: string) => handleUpdateAlpha(val)}></Horizen>
+      <NavContainer>
+        <Horizen
+          list={categoryTypes}
+          title={'分类 (默认热门):'}
+          oldVal={category}
+          handleClick={(val: string) => handleUpdateCatetory(val)}></Horizen>
+        <Horizen
+          list={alphaTypes}
+          title={'首字母:'}
+          oldVal={alpha}
+          handleClick={(val: string) => handleUpdateAlpha(val)}></Horizen>
+      </NavContainer>
+      <ListContainer>
+        <Scroll
+          pullUp={handlePullUp}
+          pullDown={handlePullDown}
+          pullUpLoading={pullUpLoading}
+          pullDownLoading={pullDownLoading}
+          onScroll={forceCheck}>
+          {renderSingerList()}
+        </Scroll>
+        {enterLoading ? <Loading></Loading> : null}
+      </ListContainer>
     </div>
   );
 }
 
-export default React.memo(Singers);
+const mapStateToProps = (state: Map<string, any>) => ({
+  singerList: state.getIn(['singers', 'singerList']),
+  enterLoading: state.getIn(['singers', 'enterLoading']),
+  pullUpLoading: state.getIn(['singers', 'pullUpLoading']),
+  pullDownLoading: state.getIn(['singers', 'pullDownLoading']),
+  pageCount: state.getIn(['singers', 'pageCount'])
+});
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    getHotSingerDispatch() {
+      dispatch(getHotSingerList());
+    },
+    updateDispatch(category: string, alpha: string) {
+      dispatch(changePageCount(0)); //改变分类时，所以pageCount清零
+      dispatch(changeEnterLoading(true));
+      dispatch(getSingerList(category, alpha));
+    },
+    // 滑到最底部刷新部分的处理
+    pullUpRefreshDispatch(
+      category: string,
+      alpha: string,
+      hot: boolean,
+      count: number
+    ) {
+      dispatch(changePullUpLoading(true));
+      dispatch(changePageCount(count + 1));
+      if (hot) {
+        dispatch(refreshMoreHotSingerList());
+      } else {
+        dispatch(refreshMoreSingerList(category, alpha));
+      }
+    },
+    //顶部下拉刷新
+    pullDownRefreshDispatch(category: string, alpha: string) {
+      dispatch(changePullDownLoading(true));
+      dispatch(changePageCount(0)); //属于重新获取数据
+      if (category === '' && alpha === '') {
+        dispatch(getHotSingerList());
+      } else {
+        dispatch(getSingerList(category, alpha));
+      }
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(Singers));
