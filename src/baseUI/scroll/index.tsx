@@ -9,11 +9,22 @@ import React, {
 import styled from 'styled-components';
 import BScroll from 'better-scroll';
 import { debounce } from '../../api/utils';
+import Loading from '../loading-v2/index';
 
 const SrollContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: hidden;
+`;
+
+export const PullDownLoading = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0px;
+  height: 30px;
+  margin: auto;
+  z-index: 100;
 `;
 
 interface ScrollProps {
@@ -37,7 +48,7 @@ const Scroll: React.FunctionComponent<ScrollProps> = forwardRef(
 
     const { direction, click, refresh, bounceTop, bounceBottom } = props;
 
-    const { pullUp, pullDown, onScroll } = props;
+    const { pullUp, pullDown, onScroll, pullDownLoading } = props;
 
     useEffect(() => {
       const scroll = new BScroll(scrollContaninerRef.current, {
@@ -136,6 +147,11 @@ const Scroll: React.FunctionComponent<ScrollProps> = forwardRef(
     return (
       <SrollContainer ref={scrollContaninerRef}>
         {props.children}
+        {pullDownLoading ? (
+          <PullDownLoading>
+            <Loading />
+          </PullDownLoading>
+        ) : null}
       </SrollContainer>
     );
   }
