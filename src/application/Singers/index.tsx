@@ -189,16 +189,6 @@ export const alphaTypes = [
   }
 ];
 
-//mock 歌手列表数据
-const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(item => {
-  return {
-    picUrl:
-      'https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg',
-    name: '隔壁老樊',
-    accountId: 277313426
-  };
-});
-
 function Singers(props: any) {
   let [category, setCategory] = useState('');
   let [alpha, setAlpha] = useState('');
@@ -243,7 +233,6 @@ function Singers(props: any) {
 
   const renderSingerList = () => {
     const list = singerList ? singerList.toJS() : [];
-    console.log(props);
     return (
       <List>
         {list.map((item: any, index: number) => {

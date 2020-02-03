@@ -3,10 +3,12 @@ import React, {
   useState,
   useRef,
   useImperativeHandle,
-  useEffect
+  useEffect,
+  useMemo
 } from 'react';
 import styled from 'styled-components';
 import BScroll from 'better-scroll';
+import { debounce } from '../../api/utils';
 
 const SrollContainer = styled.div`
   width: 100%;
@@ -72,6 +74,15 @@ const Scroll: React.FunctionComponent<ScrollProps> = forwardRef(
       };
     }, [onScroll, bScroll]);
 
+    // 下拉上滑回调函数的防抖
+    let pullUpDebounce = useMemo(() => {
+      return debounce(pullUp, 300);
+    }, [pullUp]);
+
+    let pullDownDebounce = useMemo(() => {
+      return debounce(pullDown, 300);
+    }, [pullDown]);
+
     // 滑动到底部，执行的回调
     useEffect(() => {
       if (!bScroll || !pullUp) return;
@@ -79,26 +90,26 @@ const Scroll: React.FunctionComponent<ScrollProps> = forwardRef(
       bScroll.on('scrollEnd', () => {
         // 判断滑动结束时，是否滑动到了底部
         if (bScroll.y <= bScroll.maxScrollY + 100) {
-          pullUp();
+          pullUpDebounce();
         }
       });
       return () => {
         bScroll.off('scrollEnd');
       };
-    }, [pullUp, bScroll]);
+    }, [pullUp, bScroll, pullUpDebounce]);
 
     useEffect(() => {
       if (!bScroll || !pullDown) return;
       bScroll.on('touchEnd', (pos: { x: number; y: number }) => {
         // 判断用户的下拉动作，超过50像素时，执行回调
         if (pos.y > 50) {
-          pullDown();
+          pullDownDebounce();
         }
       });
       return () => {
         bScroll.off('touchEnd');
       };
-    }, [pullDown, bScroll]);
+    }, [pullDown, bScroll, pullDownDebounce]);
 
     // 重新渲染可能会有DOM结构的改变，调用refresh，以保证scroll正常
     useEffect(() => {
