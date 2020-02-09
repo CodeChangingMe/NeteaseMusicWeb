@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Horizen from '../../baseUI/horizen-item';
 import { NavContainer, ListContainer, List, ListItem } from './style';
 import Scroll from '../../baseUI/scroll';
@@ -17,10 +17,12 @@ import { connect } from 'react-redux';
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import Loading from '../../baseUI/loading';
 import { categoryTypes, alphaTypes } from './constants';
+import { CategoryDataContext, CHANGE_CATEGORY, CHANGE_ALPHA } from './data';
 
 function Singers(props: any) {
-  let [category, setCategory] = useState('');
-  let [alpha, setAlpha] = useState('');
+  const { data, dispatch } = useContext(CategoryDataContext);
+  // 拿到 category 和 alpha 的值
+  const { category, alpha } = data.toJS();
 
   const {
     singerList,
@@ -38,17 +40,19 @@ function Singers(props: any) {
   } = props;
 
   useEffect(() => {
-    getHotSingerDispatch();
+    if (!singerList.size) {
+      getHotSingerDispatch();
+    }
     // eslint-disable-next-line
   }, []);
 
   const handleUpdateCatetory = (val: string) => {
-    setCategory(val);
+    dispatch({ type: CHANGE_CATEGORY, data: val });
     updateDispatch(val, alpha);
   };
 
   const handleUpdateAlpha = (val: string) => {
-    setAlpha(val);
+    dispatch({ type: CHANGE_ALPHA, data: val });
     updateDispatch(category, val);
   };
 

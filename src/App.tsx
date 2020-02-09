@@ -6,6 +6,7 @@ import routes from './routes/index';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
+import { Data } from './application/Singers/data';
 
 const App: React.FC = () => {
   return (
@@ -13,7 +14,7 @@ const App: React.FC = () => {
       <HashRouter>
         <GlobalStyle></GlobalStyle>
         <IconStyle></IconStyle>
-        {renderRoutes(routes)}
+        <Data>{renderRoutes(routes)}</Data>
       </HashRouter>
     </Provider>
   );
