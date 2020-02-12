@@ -9,6 +9,7 @@ import Loading from '../../baseUI/loading/index';
 import { Content } from './style';
 import Srcoll from '../../baseUI/scroll/index';
 import { forceCheck } from 'react-lazyload';
+import { renderRoutes } from 'react-router-config';
 
 function Recommend(props: any) {
   const { bannerList, recommendList, enterLoading } = props;
@@ -40,6 +41,7 @@ function Recommend(props: any) {
           )}
         </div>
       </Srcoll>
+      {renderRoutes(props.route.routes)}
     </Content>
   );
 }
