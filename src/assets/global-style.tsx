@@ -10,7 +10,7 @@ const extendClick = () => {
   `;
 };
 
-// 超出区域的文字以...显示，且不会换行
+// 超出区域的文字以...显示，连续的空格会被合并，换行符无效
 const noWrap = () => {
   return `
     text-overflow: ellipsis;  

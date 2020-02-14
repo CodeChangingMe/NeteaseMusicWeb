@@ -1,7 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import style from '../../assets/global-style';
-import PropTypes from 'prop-types';
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -24,22 +23,50 @@ const HeaderContainer = styled.div`
   }
 `;
 
+const marqueeKeyframes = keyframes`
+  0% {
+    transform: translateX(100%)
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+`;
+
+const Marquee = styled.div`
+  flex: 1;
+  overflow: hidden;
+  h1 {
+    animation: ${marqueeKeyframes} 7s linear infinite;
+  }
+`;
+
 interface Iprops {
   handleClick: () => void;
   title: string;
+  isMarquee: boolean;
 }
 
-const Header: React.FC<Iprops> = React.forwardRef((props, ref: any) => {
-  const { handleClick, title } = props;
-  return (
-    <HeaderContainer ref={ref}>
-      <i className="iconfont back" onClick={handleClick}>
-        &#xe655;
-      </i>
-      <h1>{title}</h1>
-    </HeaderContainer>
-  );
-});
+const Header: React.ForwardRefExoticComponent<Iprops &
+  React.RefAttributes<HTMLDivElement>> = React.forwardRef(
+  (props, ref: React.Ref<HTMLDivElement>) => {
+    const { handleClick, title, isMarquee } = props;
+    return (
+      <HeaderContainer ref={ref}>
+        <i className="iconfont back" onClick={handleClick}>
+          &#xe655;
+        </i>
+        {isMarquee ? (
+          <Marquee>
+            <h1>{title}</h1>
+          </Marquee>
+        ) : (
+          <h1>{title}</h1>
+        )}
+      </HeaderContainer>
+    );
+  }
+);
 
 Header.defaultProps = {
   handleClick: () => {},
