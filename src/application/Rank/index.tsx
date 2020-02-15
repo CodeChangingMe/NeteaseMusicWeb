@@ -39,7 +39,7 @@ function Rank(props: any) {
             <ListItem
               key={index}
               tracks={item.tracks}
-              onClick={() => enterDetail(item.name)}>
+              onClick={() => enterDetail(item)}>
               <div className="img_wrapper">
                 <img src={item.coverImgUrl} alt="" />
                 <div className="decorate"></div>
